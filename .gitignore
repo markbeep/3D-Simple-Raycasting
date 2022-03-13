@@ -5,6 +5,7 @@ gmon.out
 *.stats
 Thumbs.db
 .DS_Store
+*.exe
 
 # VS Code
 .vscode/ipch
