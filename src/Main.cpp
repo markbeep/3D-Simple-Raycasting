@@ -1,11 +1,12 @@
 #include "Platform/Platform.hpp"
+#include <chrono>
 #include <cmath>
 #include <iostream>
 
-const int FOV = 90;			  // how many degrees to see (Field of view)
-const int ACCURACY = 3;		  // how many rays should be shot out for every degree of FOV
-const float MOVESPEED = 0.09; // how fast to move around
-const float TURNSPEED = 0.25; // how fast to turn around
+const int FOV = 90;			 // how many degrees to see (Field of view)
+const int ACCURACY = 3;		 // how many rays should be shot out for every degree of FOV
+const float MOVESPEED = 45;	 // how fast to move around
+const float TURNSPEED = 150; // how fast to turn around
 const bool DRAWMAP = false;
 
 static const double pi = 3.14159265358979323846;
@@ -86,6 +87,9 @@ int main()
 	sky[2].color = sf::Color::Black;
 	sky[3].color = sf::Color::Blue;
 
+	float lastFrameTime = (float)clock() / CLOCKS_PER_SEC;
+	float deltaTime;
+
 	while (window.isOpen())
 	{
 		while (window.pollEvent(event))
@@ -94,38 +98,42 @@ int main()
 				window.close();
 		}
 
+		float tmp = (float)clock() / CLOCKS_PER_SEC;
+		deltaTime = tmp - lastFrameTime;
+		lastFrameTime = tmp;
+
 		// handle movement
 		sf::Vector2f heading = *degToVector(player.dir + FOV / 2.0);	  // for going forward/backwards
 		sf::Vector2f perpendicular = sf::Vector2f(heading.y, -heading.x); // for going left/right
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		{
-			player.pos.x += heading.x * MOVESPEED;
-			player.pos.y += heading.y * MOVESPEED;
+			player.pos.x += heading.x * MOVESPEED * deltaTime;
+			player.pos.y += heading.y * MOVESPEED * deltaTime;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 		{
-			player.pos.x -= heading.x * MOVESPEED;
-			player.pos.y -= heading.y * MOVESPEED;
+			player.pos.x -= heading.x * MOVESPEED * deltaTime;
+			player.pos.y -= heading.y * MOVESPEED * deltaTime;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 		{
-			player.pos.x += perpendicular.x * MOVESPEED;
-			player.pos.y += perpendicular.y * MOVESPEED;
+			player.pos.x += perpendicular.x * MOVESPEED * deltaTime;
+			player.pos.y += perpendicular.y * MOVESPEED * deltaTime;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		{
-			player.pos.x -= perpendicular.x * MOVESPEED;
-			player.pos.y -= perpendicular.y * MOVESPEED;
+			player.pos.x -= perpendicular.x * MOVESPEED * deltaTime;
+			player.pos.y -= perpendicular.y * MOVESPEED * deltaTime;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 		{
-			player.dir -= TURNSPEED;
+			player.dir -= TURNSPEED * deltaTime;
 			if (player.dir < 0)
 				player.dir = 360;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 		{
-			player.dir += TURNSPEED;
+			player.dir += TURNSPEED * deltaTime;
 			if (player.dir > 360)
 				player.dir = 0;
 		}
